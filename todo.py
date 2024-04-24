@@ -1,53 +1,62 @@
-import tkinter as tk
+tasks = []
 
-class ToDoList:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("To-Do List")
-        self.master.geometry("300x400")
 
-        self.task_list = []
+def display_menu():
+    print("\nTo-Do List Menu:")
+    print("1. Add Task")
+    print("2. View Tasks")
+    print("3. Mark Task as Completed")
+    print("4. Clear Completed Tasks")
+    print("5. Exit")
 
-        self.task_entry = tk.Entry(self.master)
-        self.task_entry.pack()
 
-        self.add_button = tk.Button(self.master, text="Add Task", command=self.add_task)
-        self.add_button.pack()
+def add_task():
+    task = input("Enter the task: ")
+    tasks.append({"task": task, "completed": False})
+    print("Task added successfully!")
 
-        self.task_frame = tk.Frame(self.master)
-        self.task_frame.pack()
 
-    def add_task(self):
-        task = self.task_entry.get()
-        self.task_entry.delete(0, tk.END)
+def view_tasks():
+    if not tasks:
+        print("No tasks.")
+    else:
+        print("\nTasks:")
+        for index, task in enumerate(tasks, start=1):
+            status = "Completed" if task["completed"] else "Not Completed"
+            print(f"{index}. {task['task']} - {status}")
 
-        if task:
-            self.task_list.append(task)
-            self.update_task_list()
 
-    def update_task_list(self):
-        # clear the task frame
-        for child in self.task_frame.winfo_children():
-            child.destroy()
+def mark_completed():
+    view_tasks()
+    try:
+        index = int(input("Enter the task number to mark as completed: ")) - 1
+        tasks[index]["completed"] = True
+        print("Task marked as completed!")
+    except (IndexError, ValueError):
+        print("Invalid task number.")
 
-        # add the tasks to the frame
-        for task in self.task_list:
-            task_frame = tk.Frame(self.task_frame)
-            task_frame.pack(fill=tk.X)
 
-            task_check = tk.Checkbutton(task_frame)
-            task_check.pack(side=tk.LEFT)
+def clear_completed():
+    global tasks
+    tasks = [task for task in tasks if not task["completed"]]
+    print("Completed tasks cleared!")
 
-            task_label = tk.Label(task_frame, text=task)
-            task_label.pack(side=tk.LEFT)
 
-            task_button = tk.Button(task_frame, text="Delete", command=lambda t=task: self.delete_task(t))
-            task_button.pack(side=tk.RIGHT)
+while True:
+    display_menu()
+    choice = input("\nEnter your choice (1-5): ")
 
-    def delete_task(self, task):
-        self.task_list.remove(task)
-        self.update_task_list()
+    if choice == '1':
+        add_task()
+    elif choice == '2':
+        view_tasks()
+    elif choice == '3':
+        mark_completed()
+    elif choice == '4':
+        clear_completed()
+    elif choice == '5':
+        print("Exiting program...")
+        break
+    else:
+        print("Invalid choice. Please enter a number from 1 to 5.")
 
-root = tk.Tk()
-to_do_list = ToDoList(root)
-root.mainloop()
